@@ -1,7 +1,7 @@
-import Header from "./components/Header";
-import CoreConcept from "./components/CoreConcept";
-import TabButton from "./components/TabButton";
-import { CORE_CONCEPTS } from "./data";
+import Header from "./components/Header.js";
+import CoreConcept from "./components/CoreConcept.js";
+import TabButton from "./components/TabButton.js";
+import { CORE_CONCEPTS } from "./data.js";
 
 function App() {
   return (
@@ -26,7 +26,9 @@ function App() {
         <section id="examples">
           <h2>Examples</h2>
           <menu>
-            <TabButton>Hello</TabButton>
+            {["Components", "JSX", "Props", "State"].map((x) => (
+              <TabButton key={`menuItem${x}`}>{x}</TabButton>
+            ))}
           </menu>
           <p>More to come...</p>
         </section>
