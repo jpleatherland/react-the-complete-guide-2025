@@ -1,9 +1,25 @@
+import { useState } from "react";
+
 import Header from "./components/Header.js";
 import CoreConcept from "./components/CoreConcept.js";
 import TabButton from "./components/TabButton.js";
-import { CORE_CONCEPTS } from "./data.js";
+import { CORE_CONCEPTS, EXAMPLES } from "./data.js";
+
+const TAB_NAMES = ["Components", "JSX", "Props", "State"] as const;
+
+type TabName = typeof TAB_NAMES[number];
+
+function getExampleKey(tab: TabName): keyof typeof EXAMPLES {
+  return tab.toLowerCase() as keyof typeof EXAMPLES;
+}
 
 function App() {
+  const [selectedTab, setSelectedTab] = useState<TabName>("Components");
+
+  const handleClick = (selectedButton: TabName) => {
+    setSelectedTab(selectedButton);
+  }
+
   return (
     <div>
       <Header />
@@ -24,16 +40,23 @@ function App() {
           </ul>
         </section>
         <section id="examples">
-          <h2>Examples</h2>
           <menu>
-            {["Components", "JSX", "Props", "State"].map((x) => (
-              <TabButton key={`menuItem${x}`}>{x}</TabButton>
+            {TAB_NAMES.map((x) => (
+              <TabButton key={`menuItem${x}`} clickHandler={() => handleClick(x as TabName)}>{x}</TabButton>
             ))}
           </menu>
-          <p>More to come...</p>
-        </section>
-      </main>
-    </div>
+          <div id="tab-content">
+            <h3>{EXAMPLES[getExampleKey(selectedTab)].title}</h3>
+            <p>{EXAMPLES[getExampleKey(selectedTab)].description}</p>
+            <pre>
+              <code>
+                {EXAMPLES[getExampleKey(selectedTab)].code}
+              </code>
+            </pre>
+          </div>
+        </section >
+      </main >
+    </div >
   );
 }
 
