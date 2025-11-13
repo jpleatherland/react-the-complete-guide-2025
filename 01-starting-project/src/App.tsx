@@ -7,18 +7,27 @@ import { CORE_CONCEPTS, EXAMPLES } from "./data.js";
 
 const TAB_NAMES = ["Components", "JSX", "Props", "State"] as const;
 
-type TabName = typeof TAB_NAMES[number];
+type TabName = typeof TAB_NAMES[number] | null;
 
-function getExampleKey(tab: TabName): keyof typeof EXAMPLES {
-  return tab.toLowerCase() as keyof typeof EXAMPLES;
+// function getExampleKey(tab: TabName): keyof typeof EXAMPLES {
+//   //function will not be called if tab is falsey
+//   return tab!.toLowerCase() as keyof typeof EXAMPLES;
+// }
+
+// if you are against ! operator
+// use with exampleKey
+function getExampleKey(tab: TabName): keyof typeof EXAMPLES | null {
+  return tab ? tab.toLowerCase() as keyof typeof EXAMPLES : null;
 }
 
 function App() {
-  const [selectedTab, setSelectedTab] = useState<TabName>("Components");
+  const [selectedTab, setSelectedTab] = useState<TabName>(null);
 
   const handleClick = (selectedButton: TabName) => {
     setSelectedTab(selectedButton);
   }
+
+  const exampleKey = getExampleKey(selectedTab)
 
   return (
     <div>
@@ -31,9 +40,7 @@ function App() {
               return (
                 <CoreConcept
                   key={`concept${i}`}
-                  title={concept.title}
-                  description={concept.description}
-                  image={concept.image}
+                  {...concept}
                 />
               );
             })}
@@ -42,18 +49,24 @@ function App() {
         <section id="examples">
           <menu>
             {TAB_NAMES.map((x) => (
-              <TabButton key={`menuItem${x}`} clickHandler={() => handleClick(x as TabName)}>{x}</TabButton>
+              <TabButton
+                key={`menuItem${x}`}
+                isSelected={selectedTab === x}
+                clickHandler={() => handleClick(x as TabName)}
+              >{x}</TabButton>
             ))}
           </menu>
-          <div id="tab-content">
-            <h3>{EXAMPLES[getExampleKey(selectedTab)].title}</h3>
-            <p>{EXAMPLES[getExampleKey(selectedTab)].description}</p>
-            <pre>
-              <code>
-                {EXAMPLES[getExampleKey(selectedTab)].code}
-              </code>
-            </pre>
-          </div>
+          {!exampleKey ? <p>Please select a tab</p> :
+            <div id="tab-content">
+              <h3>{EXAMPLES[exampleKey].title}</h3>
+              <p>{EXAMPLES[exampleKey].description}</p>
+              <pre>
+                <code>
+                  {EXAMPLES[exampleKey].code}
+                </code>
+              </pre>
+            </div>
+          }
         </section >
       </main >
     </div >
